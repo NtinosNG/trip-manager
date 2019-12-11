@@ -1,0 +1,17 @@
+body {
+    background-color: rgb(207, 207, 207);
+}
+
+.headername {
+    background-color: rgb(169, 222, 243);
+
+}
+
+hr {
+    background-color: white;
+
+}
+
+#homeHeader {
+    letter-spacing: -2px;
+}
