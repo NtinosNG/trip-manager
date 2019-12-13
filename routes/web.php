@@ -11,18 +11,20 @@
 |
 */
 
-Route::get('/', function () {
-    if(Auth::Check()) {
-        return view('home');
-    }
-    else {
-        return view('auth/login');
-    }
-});
+Route::get('/', 'PagesController@index');
+
+Route::put('/home/{id}', 'HomeController@update');
+Route::get('/home', 'HomeController@index')->name('home');
+Route::delete('/home/delete_passenger/{passenger}', 'PassengersController@destroy')->name('passenger');
+
+Route::get('/add_passenger', 'PassengersController@create')->name('add_passenger');
+Route::post('/add_passenger', 'PassengersController@store');
+
+Route::get('/add_trip', 'TripsController@create')->name('add_trip');
+Route::post('/add_trip', 'TripsController@store');
+Route::delete('/home/delete_trip/{trip}', 'TripsController@destroy');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/add_passenger', 'HomeController@addPassenger')->name('add_passenger');
-Route::get('/add_trip', 'HomeController@addTrip')->name('add_trip');
+
 

@@ -13,39 +13,41 @@
 				<div class="card-header headername">Basic Info</div>
 
 				<div class="card-body">
-					<form method="POST" action ="" class="needs-validation" novalidate>
+					<form method="POST" action ="/home/{{$user->id}}" class="needs-validation" novalidate>
+						@method('PUT')
+						@csrf
 						<div class="form-group row">
 							<label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
 							<div class="col-sm-10">
-								<input type="email" value="{{{ Auth::user()->email }}}" class="form-control" id="inputEmail" placeholder="Email" disabled="disabled" required>
+								<input type="email" name="email" value="{{{ $user->email }}}" class="form-control" id="inputEmail" placeholder="Email"  required>
 								<div class="invalid-feedback">Please provide a valid email.</div>							
 							</div>
 						</div>
 						<div class="form-group row">
 							<label for="inputName" class="col-sm-2 col-form-label">Name</label>
 							<div class="col-sm-10">
-								<input type="text" value="{{{ Auth::user()->name}}}" class="form-control" id="inputName" placeholder="Name" required>
+								<input type="text" name="name" value="{{{ Auth::user()->name}}}" class="form-control" id="inputName" placeholder="Name" required>
 								<div class="invalid-feedback">Please provide your legal name.</div>							
 							</div>
 						</div>
 						<div class="form-group row">
 							<label for="inputAddress" class="col-sm-2 col-form-label">Address</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputAddress" placeholder="Address" required>
+								<input type="text"  name="address" value="{{{ Auth::user()->address }}}" class="form-control" id="inputAddress" placeholder="Address" >
 								<div class="invalid-feedback">Please provide a valid address.</div>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label for="inputCity" class="col-sm-2 col-form-label">City</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputCity" placeholder="City" required>
+								<input type="text"  name="city" value="{{{ Auth::user()->city }}}" class="form-control" id="inputCity" placeholder="City" >
 								<div class="invalid-feedback">Please provide a city.</div>
 							</div>
 						</div>
 						<div class="form-group row">
 							<label for="inputCountry" class="col-sm-2 col-form-label">Country</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputCountry" placeholder="Country" required>
+								<input type="text" name="country" value="{{{ Auth::user()->country }}}" class="form-control" id="inputCountry" placeholder="Country" >
 								<div class="invalid-feedback">Please provide a country.</div>
 							</div>
 						</div>
@@ -98,32 +100,34 @@
 									<th scope="col">First Name</th>
 									<th scope="col">Surname</th>
 									<th scope="col">Passport ID</th>
+									<th scope="col">Trips</th>
 									<th scope="col">Options</th>
 								</tr>
 							</thead>
+							@if($user->passengers)
+							@foreach($user->passengers as $passenger)
 							<tbody>
 								<tr>
-									<td>Mr</td>
-									<td>Mark</td>
-									<td>Otto</td>
-									<td>12345678</td>
-									<td><button class="btn btn-danger">Delete</button></td>
-								</tr>
-								<tr>
-									<td>Mr</td>
-									<td>Jacob</td>
-									<td>Thornton</td>
-									<td>8796541233</td>
-									<td><button class="btn btn-danger">Delete</button></td>
-								</tr>
-								<tr>
-									<td>Ms</td>
-									<td>Jane</td>
-									<td>Doe</td>
-									<td>9854845489</td>
-									<td><button class="btn btn-danger">Delete</button></td>
+									<td>{{$passenger->title}}</td>
+									<td>{{$passenger->first_name}}</td>
+									<td>{{$passenger->surname}}</td>
+									<td>{{$passenger->passport_id}}</td>
+									<td>
+									@for($i = 0; $i < count($passenger->trips); $i++)
+									 {{ $passenger->trips[$i]['departure_airport_code'] }} -> {{ $passenger->trips[$i]['arrival_airport_code'] }} <br/>
+									@endfor
+									</td>
+									<td>
+										<form method="POST" action ="/home/delete_passenger/{{$passenger->id}}" novalidate>
+										@method('DELETE')
+										@csrf
+											<button type="submit" class="btn btn-danger">Delete</button>
+										</form>
+									</td>
 								</tr>
 							</tbody>
+							@endforeach
+							@endif
 						</table>   
 						<button type="button"  onclick="window.location='{{ route('add_passenger') }}'" class="btn btn-success float-right">Add</button>
 					</div>     
@@ -150,24 +154,29 @@
 									<th scope="col">Options</th>
 								</tr>
 							</thead>
+							@if($trips)
+							@foreach($trips as $trip)
 							<tbody>
 								<tr>
-									<td>MAD</td>
-									<td>LAX</td>
-									<td>11/Apr/2017 06:31</td>
-									<td>11/May/2017 17:33</td>
-									<td>Mr John Smith, Ms Jane Smith</td>
-									<td><button class="btn btn-danger">Delete</button></td>
+									<td>{{$trip->departure_airport_code}}</td>
+									<td>{{$trip->arrival_airport_code}}</td>
+									<td>{{ \Carbon\Carbon::parse($trip->departure_datetime)->format('d/M/Y H:i') }}</td>
+									<td>{{ \Carbon\Carbon::parse($trip->arrival_datetime)->format('d/M/Y H:i') }}</td>
+									<td>
+									@for($i = 0; $i < count($trip->passengers); $i++)
+										{{ $trip->passengers[$i]['title'] }} {{ $trip->passengers[$i]['first_name'] }} {{ $trip->passengers[$i]['surname'] }} <br/>
+									@endfor
+									</td>
+									<td>
+										<form method="POST" action ="/home/delete_trip/{{$trip->id}}" novalidate>
+										@method('DELETE')
+										@csrf
+											<button type="submit" class="btn btn-danger">Delete</button>
+										</form>
+									</td>
 								</tr>
-								<tr>
-									<td>LON</td>
-									<td>JFK</td>
-									<td>12/Apr/2017 06:31</td>
-									<td>12/May/2017 17:33</td>
-									<td>Mr John Doe, Ms Jane Doe</td>
-									<td><button class="btn btn-danger">Delete</button></td>
-								</tr>
-							</tbody>
+							@endforeach
+							@endif
 						</table>   
 						<button type="button" onclick="window.location='{{ route('add_trip') }}'"  class="btn btn-success float-right">Add</button>  
 					</div>  

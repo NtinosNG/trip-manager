@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Passenger;
+use App\Trip;
+use Auth;
 
 class HomeController extends Controller
 {
@@ -23,16 +26,34 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user = Auth::user();
+        $trips = Trip::All();
+     
+        return view('home')->with(['user'=>$user, 'trips'=>$trips]);
     }
 
-    public function addPassenger() 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
     {
-       return view('add_passenger');
+
+        $user = Auth::user()::find($id);
+        $user->email = $request->input('email');
+        $user->name = $request->input('name');
+        $user->address = $request->input('address');
+        $user->city = $request->input('city');
+        $user->country = $request->input('country');
+        
+        $user->save();
+        
+        return redirect('/home')->with('success', 'Basic info updated!');
+
     }
 
-    public function addTrip() 
-    {
-       return view('add_trip');
-    }
+
 }
